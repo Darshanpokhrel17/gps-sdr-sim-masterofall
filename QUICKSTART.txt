@@ -1,0 +1,45 @@
+GPS-SDR-SIM . "Master of All Master" v2 . QUICK START
+=====================================================
+
+FIRST TIME (fixes "hackrf_transfer not recognized")
+---------------------------------------------------
+1. Double-click  SETUP-HACKRF.bat
+   - if it prints a HackRF device block, you're ready.
+   - if not: install PothosSDR (or radioconda) + run Zadig (HackRF One -> WinUSB),
+     then run SETUP-HACKRF.bat again.
+
+DEMO (barely any terminal)
+--------------------------
+1. Put today's NASA brdc file in the  nav\  folder
+   (today = brdc2290.26n ; a 2022 sample is included to test now).
+
+2. Double-click  START-DASHBOARD.bat   ->  browser opens at http://127.0.0.1:8770
+
+3. In the dashboard:
+   (1) GENERATE  - enter lat/lon/alt, duration, time (defaults to now UTC) -> GENERATE BIN FILE
+   (2) SELF-TEST - click "Verify the .bin"  -> must say VERDICT: PASS
+   (3) TRANSMIT  - tick "shielded chamber confirmed" -> START TRANSMIT (loops forever)
+                   tune the GAIN and FREQUENCY-OFFSET sliders until the receiver locks.
+
+4. Receiver (u-blox M10 in u-center):
+   - GPS-only  (CFG-VALSET -> CFG-SIGNAL: GPS + L1CA on, others off, save)
+   - Cold start (UBX-CFG-RST -> navBbrMask 0xFFFF)
+   - Watch UBX-NAV-SAT ; fix in ~30 s once 4+ GPS sats hit 35-45 dB-Hz.
+
+IF NOTHING LOCKS (30-sec checklist)
+-----------------------------------
+- hackrf_info sees the board?            (SETUP-HACKRF.bat)
+- TX panel says TRANSMITTING?            (it loops with -R automatically)
+- locks then DROPS after seconds?        -> lower TX gain (overpower) OR nudge freq-offset (drift)
+- weak / no sats?                        -> raise gain a little, or reduce attenuation
+- Verify said PASS but no lock?          -> RF link / receiver config (cold start, GPS-only)
+Full guide: CAGE-RUNBOOK.md
+
+BY HAND (updated to today 2026/08/17)
+-------------------------------------
+Generate:
+  gps-sdr-sim.exe -e nav/brdc2290.26n -b 8 -l 27.700769,85.300140,1337 -d 300 -t 2026/08/17,06:00:00 -T 2026/08/17,06:00:00 -o output/kathmandu.bin
+Transmit (LOOP with -R, amp off for cabled):
+  hackrf_transfer -t output/kathmandu.bin -f 1575420000 -s 2600000 -a 0 -x 20 -R
+
+SAFETY: transmit ONLY inside the Faraday cage, through cable + attenuator. Never over the air.

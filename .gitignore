@@ -1,0 +1,34 @@
+# ── Generated GPS I/Q signal data (huge: 1.5 GB+ per run, regenerated on demand) ──
+output/*.bin
+*.bin
+
+# ── C build artifacts ──
+*.o
+*.obj
+*.a
+*.lib
+*.exp
+*.ilk
+*.pdb
+
+# ── Python ──
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# ── OS / editor cruft ──
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.vscode/
+.idea/
+
+# ── Logs / temp ──
+*.log
+*.tmp
